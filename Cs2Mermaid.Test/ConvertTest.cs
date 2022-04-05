@@ -24,7 +24,23 @@ public class ConvertTest
         }
         using var sr = new StreamReader(stm, Encoding.UTF8);
         var code = sr.ReadToEnd();
-        var generated = new ConvertCsToMermaid().Convert(code);
+        var generated = ConvertCsToMermaid.Convert(code, new ConvertOptions());
+        _OutputHelper.WriteLine(generated);
+        Assert.NotNull(generated);
+    }
+    [Fact]
+    public void IfDef()
+    {
+        var options = new ConvertOptions()
+        {
+            PreprocessorSymbols = new string[] { "ABC" }
+        };
+        var code = @"
+        #if ABC
+        1 + 1
+        #endif
+        ";
+        var generated = ConvertCsToMermaid.Convert(code, options);
         _OutputHelper.WriteLine(generated);
         Assert.NotNull(generated);
     }

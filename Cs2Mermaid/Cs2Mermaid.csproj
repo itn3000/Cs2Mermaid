@@ -6,6 +6,9 @@
 
   <ItemGroup>
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="6.0.0" />
+    <None Include="../LICENSE.txt" Pack="true" PackagePath=""/>
+    <None Include="../README.md" Pack="true" PackagePath=""/>
   </ItemGroup>
 
   <PropertyGroup>
@@ -13,6 +16,19 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <AssemblyName>cs2mmd</AssemblyName>
+    <PackAsTool>true</PackAsTool>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <PackageName>Cs2Mermaid</PackageName>
+    <PackageDescription>convert CSharp syntax tree to mermaid diagram</PackageDescription>
+    <PackageTags>roslyn;csharp;mermaid</PackageTags>
+    <Copyright>Copyright 2022 itn3000</Copyright>
+    <Authors>itn3000</Authors>
+    <Owners>itn3000</Owners>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <ProjectUrl>https://github.com/itn3000/Cs2Mermaid</ProjectUrl>
+    <RepositoryUrl>https://github.com/itn3000/Cs2Mermaid</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
 </Project>

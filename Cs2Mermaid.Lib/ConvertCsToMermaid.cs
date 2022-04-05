@@ -5,46 +5,81 @@ using System.Text;
 using System.IO;
 namespace Cs2Mermaid;
 
-public class ConvertCsToMermaid
+public class ConvertOptions
+{
+    public string[]? PreprocessorSymbols { get; set; }
+    public string? LangVersion { get; set; }
+    public string? ChartOrientation { get; set; }
+}
+public static class ConvertCsToMermaid
 {
     public static string[] AvailableVersions()
     {
         return Enum.GetNames<LanguageVersion>();
     }
-    public void Convert(Stream input, Encoding inputEncoding, TextWriter tw)
+    static CSharpParseOptions CreateParseOption(ConvertOptions options)
+    {
+        var ret = CSharpParseOptions.Default;
+        if (!string.IsNullOrEmpty(options.LangVersion))
+        {
+            try
+            {
+                var langver = Enum.Parse<LanguageVersion>(options.LangVersion);
+                ret = ret.WithLanguageVersion(langver);
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"failed to parse langveresion: {options.LangVersion}", e);
+            }
+        }
+        if (options.PreprocessorSymbols != null && options.PreprocessorSymbols.Length != 0)
+        {
+            ret = ret.WithPreprocessorSymbols(options.PreprocessorSymbols);
+        }
+        return ret;
+    }
+    public static void Convert(Stream input, Encoding inputEncoding, TextWriter tw, ConvertOptions convertOptions)
     {
         var src = SourceText.From(input, inputEncoding);
-        var node = CSharpSyntaxTree.ParseText(src);
+        var opt = CreateParseOption(convertOptions);
+        var node = CSharpSyntaxTree.ParseText(src, opt);
         var rootNode = node.GetRoot();
-        tw.WriteLine("flowchart LR");
+        WriteHeader(tw, convertOptions.ChartOrientation);
         var kinds = new Dictionary<string, int>();
         var mermaidNodeName = GetMermaidNodeName(rootNode.Kind(), kinds);
         ConvertInternal(tw, mermaidNodeName, rootNode, 1, kinds);
     }
 
-    public void Convert(TextReader tr, TextWriter tw)
+    public static void Convert(TextReader tr, TextWriter tw, ConvertOptions convertOptions)
     {
         var src = SourceText.From(tr.ReadToEnd());
-        var node = CSharpSyntaxTree.ParseText(src);
+        var opt = CreateParseOption(convertOptions);
+        var node = CSharpSyntaxTree.ParseText(src, opt);
         var rootNode = node.GetRoot();
-        tw.WriteLine("flowchart LR");
+        WriteHeader(tw, convertOptions.ChartOrientation);
         var kinds = new Dictionary<string, int>();
         var mermaidNodeName = GetMermaidNodeName(rootNode.Kind(), kinds);
         ConvertInternal(tw, mermaidNodeName, rootNode, 1, kinds);
     }
-    public string Convert(string code)
+    public static string Convert(string code, ConvertOptions convertOptions)
     {
-        var node = CSharpSyntaxTree.ParseText(code);
+        var opt = CreateParseOption(convertOptions);
+        var node = CSharpSyntaxTree.ParseText(code, opt);
         var rootNode = node.GetRoot();
         var sb = new StringBuilder();
         var sw = new StringWriter(sb);
-        sw.WriteLine("flowchart LR");
+        WriteHeader(sw, convertOptions.ChartOrientation);
         var kinds = new Dictionary<string, int>();
         var mermaidNodeName = GetMermaidNodeName(rootNode.Kind(), kinds);
         ConvertInternal(sw, mermaidNodeName, rootNode, 1, kinds);
         return sb.ToString();
     }
-    string GetMermaidNodeName(SyntaxKind kind, Dictionary<string, int> kinds)
+    static void WriteHeader(TextWriter tw, string? orientation)
+    {
+        orientation = orientation ?? "LR";
+        tw.WriteLine($"flowchart {orientation}");
+    }
+    static string GetMermaidNodeName(SyntaxKind kind, Dictionary<string, int> kinds)
     {
         var s = kind.ToString();
         if (kinds.TryGetValue(s, out var val))
@@ -58,7 +93,7 @@ public class ConvertCsToMermaid
             return $"{s}_0";
         }
     }
-    void ConvertInternal(TextWriter tw, string currentNodeName, SyntaxNode node, int depth, Dictionary<string, int> kinds)
+    static void ConvertInternal(TextWriter tw, string currentNodeName, SyntaxNode node, int depth, Dictionary<string, int> kinds)
     {
         var indent = new string(' ', depth * 2);
         bool hasChild = false;
@@ -81,7 +116,6 @@ public class ConvertCsToMermaid
             }
             else
             {
-                // sb.AppendLine($"{indent}  {child.Kind().ToString()}: {child.ToString()}");
                 tw.WriteLine($"{indent}{currentNodeName} --> {childNodeName}[\"{child.Kind()} {child.ToString()}\"]");
             }
         }
