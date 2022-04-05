@@ -1,0 +1,6 @@
+class C1
+{
+#if DEBUG
+    public int P1;
+#endif
+}
