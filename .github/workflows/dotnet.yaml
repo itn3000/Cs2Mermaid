@@ -2,20 +2,24 @@ on: push
 jobs:
   default:
     strategy:
-      os:
-        - windows-2022
-        - ubuntu-20.04
-        - macos-11
-      include:
-        - os: windows-2022
-          exename: cs2mmd.exe
-          runtime: win-x64
-        - os: ubuntu-20.04
-          exename: cs2mmd
-          runtime: linux-x64
-        - os: macos-11
-          exename: cs2mmd
-          runtime: macos11-x64
+      matrix:
+        os:
+          - windows-2022
+          - ubuntu-20.04
+          - macos-11
+        include:
+          - os: windows-2022
+            exename: cs2mmd.exe
+            runtime: win-x64
+          - os: ubuntu-20.04
+            exename: cs2mmd
+            runtime: linux-x64
+          - os: macos-11
+            exename: cs2mmd
+            runtime: osx-x64
+          - os: macos-11
+            exename: cs2mmd
+            runtime: osx.12-arm64
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v3
