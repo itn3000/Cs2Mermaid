@@ -7,20 +7,25 @@ jobs:
           - windows-2022
           - ubuntu-20.04
           - macos-11
+          - macos-12-arm
         include:
           - os: windows-2022
+            osimage: windows-2022
             exename: cs2mmd.exe
             runtime: win-x64
           - os: ubuntu-20.04
+            osimage: ubuntu-20.04
             exename: cs2mmd
             runtime: linux-x64
           - os: macos-11
+            osimage: macos-11
             exename: cs2mmd
             runtime: osx-x64
-          - os: macos-11
+          - os: macos-12-arm
+            osimage: macos-11
             exename: cs2mmd
             runtime: osx.12-arm64
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.osimage }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-dotnet@v2
@@ -50,11 +55,11 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: "tgz-${{ matrix.runtime }}"
-          path: "artifacts/Release/${{ matrix.runtime }}/*.tgz"
+          path: "artifacts/archive/Release/${{ matrix.runtime }}/*.tgz"
         if: ${{ matrix.os != 'windows-2022' }}
       - name: "collect zip binary"
         uses: actions/upload-artifact@v3
         with:
           name: "zip-${{ matrix.runtime }}"
-          path: "artifacts/Release/${{ matrix.runtime }}/*.zip"
+          path: "artifacts/archive/Release/${{ matrix.runtime }}/*.zip"
         if: ${{ matrix.os == 'windows-2022' }}
