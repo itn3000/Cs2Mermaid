@@ -83,19 +83,11 @@ jobs:
         run: dotnet nuget push artifacts/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
         env:
           NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
-      - name: upload zip to github release
-        run: gh release upload ${{steps.tag_name.outputs.GIT_TAG_NAME}} artifacts/*.zip
-        env:
-          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: upload tgz to github release
-        run: gh release upload ${{steps.tag_name.outputs.GIT_TAG_NAME}} artifacts/*.tgz
+        run: gh release upload ${{steps.tag_name.outputs.GIT_TAG_NAME}} artifacts/tgz-linux-x64/*.* artifacts/tgz-osx-64/*.* artifacts/tgz-osx.12-arm64/*.* --clobber
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: upload nupkg to github release
-        run: gh release upload ${{steps.tag_name.outputs.GIT_TAG_NAME}} artifacts/*.nupkg
-        env:
-          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-      - name: upload snupkg to github release
-        run: gh release upload ${{steps.tag_name.outputs.GIT_TAG_NAME}} artifacts/*.snupkg
+      - name: upload zip and nupkg to github release
+        run: gh release upload ${{steps.tag_name.outputs.GIT_TAG_NAME}} artifacts/nupkg/*.* artifacts/zip-win-x64/*.* --clobber
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
