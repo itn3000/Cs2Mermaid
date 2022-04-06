@@ -14,6 +14,8 @@ using Nuke.Common.Tools.DotNet;
 using System.IO.Compression;
 using static Nuke.Common.IO.CompressionTasks;
 using ICSharpCode.SharpZipLib.Tar;
+using static Nuke.Common.Tools.NuGet.NuGetTasks;
+using Nuke.Common.Tools.NuGet;
 
 [CheckBuildProjectConfigurations]
 class Build : NukeBuild
@@ -30,6 +32,12 @@ class Build : NukeBuild
     readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
     [Parameter("publish runtime")]
     readonly string Runtime = null;
+    [Parameter("version suffix")]
+    readonly string VersionSuffix = "";
+    [Parameter("nuget api key")]
+    readonly string ApiKey = null;
+    [Parameter("nuget source")]
+    readonly string PackageSource = "https://api.nuget.org/v3/index.json";
 
     AbsolutePath ArtifactDir = RootDirectory / "artifacts";
 
@@ -94,6 +102,7 @@ class Build : NukeBuild
             DotNetTasks.DotNetPack(cfg => cfg.SetConfiguration(Configuration)
                 .SetProject(projectFile)
                 .SetOutputDirectory(outdir)
+                .SetVersionSuffix(VersionSuffix)
                 );
         });
     Target ArchiveZip => _ => _
@@ -141,5 +150,19 @@ class Build : NukeBuild
                 }
             }
         });
-
+    Target Push => _ => _
+        .DependsOn(Pack)
+        .Executes(() =>
+        {
+            var targetFile = GlobFiles(ArtifactDir / Configuration / "Any", "*.nupkg").FirstOrDefault();
+            if(targetFile == null)
+            {
+                throw new Exception("targetFile not found");
+            }
+            Serilog.Log.Information("targetFile is {0}", targetFile);
+            NuGetPush(cfg => cfg.SetTargetPath(targetFile)
+                .SetApiKey(ApiKey)
+                .SetSource(PackageSource)
+                );
+        });
 }

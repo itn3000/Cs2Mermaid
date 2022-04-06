@@ -14,7 +14,7 @@ class MyCommandHandler : ICommandHandler
     Option<string> langVersion = new Option<string>(new string[] { "--lang-version" }, "C# language version");
     Option<bool> showAvailableVersion = new Option<bool>("--available-version", "output available C# version and exit");
     Option<string[]> symbolOption = new Option<string[]>("--pp-symbol", "preprocessor symbol(can be multiple)");
-    Option<string> orientationOption = new Option<string>("--chart-orientation", "flowchart orientation(default: LR)");
+    Option<string> orientationOption = new Option<string>(new string[] { "--chart-orientation", "-co" }, "flowchart orientation(default: LR)");
     public Option[] GetOptions()
     {
         return new Option[]

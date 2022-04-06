@@ -29,6 +29,8 @@
     <ProjectUrl>https://github.com/itn3000/Cs2Mermaid</ProjectUrl>
     <RepositoryUrl>https://github.com/itn3000/Cs2Mermaid</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
 </Project>

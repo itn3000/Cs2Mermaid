@@ -6,6 +6,10 @@
     "build": {
       "type": "object",
       "properties": {
+        "ApiKey": {
+          "type": "string",
+          "description": "nuget api key"
+        },
         "Configuration": {
           "type": "string",
           "description": "Configuration to build - Default is 'Debug' (local) or 'Release' (server)",
@@ -46,6 +50,10 @@
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"
         },
+        "PackageSource": {
+          "type": "string",
+          "description": "nuget source"
+        },
         "Partition": {
           "type": "string",
           "description": "Partition to use on CI"
@@ -81,6 +89,7 @@
               "Compile",
               "Pack",
               "Publish",
+              "Push",
               "Restore",
               "Test"
             ]
@@ -102,6 +111,7 @@
               "Compile",
               "Pack",
               "Publish",
+              "Push",
               "Restore",
               "Test"
             ]
@@ -116,6 +126,10 @@
             "Quiet",
             "Verbose"
           ]
+        },
+        "VersionSuffix": {
+          "type": "string",
+          "description": "version suffix"
         }
       }
     }

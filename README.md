@@ -15,9 +15,11 @@ This tool converts from C# syntax tree to mermaid diagram
 
 ### single executable binary
 
-1. download zip or gzip binary from [release page](https://github.com/itn3000/Cs2Mermaid/releases)
+1. download zip or tgz binary from [release page](https://github.com/itn3000/Cs2Mermaid/releases)
 2. extract binary
 3. (if linux or mac) add executable flag to file
+
+# Examples Usage
 
 ## Read from file and output to stdout
 
@@ -34,11 +36,11 @@ This tool converts from C# syntax tree to mermaid diagram
 ## parse with Preprocessor
 
 `--symbol` option can be specified multiple.
-`cs2mmd -i path/to/cs --symbol ABC --symbol DEF`
+`cs2mmd -i path/to/cs --pp-symbol ABC --pp-symbol DEF`
 
 ## Read from file and output to file by markdown with original source
 
-`cs2mmd -i path/to/cs -o output.md --md-with-source`
+`cs2mmd -i path/to/cs -o output.md --md-with-source --chart-orientation TD`
 
 Example output is here(please view with raw README)
 
