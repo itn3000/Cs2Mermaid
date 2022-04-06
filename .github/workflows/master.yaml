@@ -65,6 +65,7 @@ jobs:
         if: ${{ matrix.os == 'windows-2022' }}
   get_artifact_list:
     runs-on: ubuntu-20.04
+    needs: default
     steps:
       - uses: actions/download-artifact@v3
         name: "downloading artifacts"
