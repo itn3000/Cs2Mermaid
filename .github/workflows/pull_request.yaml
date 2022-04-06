@@ -1,0 +1,34 @@
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  default:
+    strategy:
+      matrix:
+        os:
+          - windows-2022
+          - ubuntu-20.04
+          - macos-11
+        include:
+          - os: windows-2022
+            osimage: windows-2022
+            exename: cs2mmd.exe
+            runtime: win-x64
+          - os: ubuntu-20.04
+            osimage: ubuntu-20.04
+            exename: cs2mmd
+            runtime: linux-x64
+          - os: macos-11
+            osimage: macos-11
+            exename: cs2mmd
+            runtime: osx-x64
+    runs-on: ${{ matrix.osimage }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v2
+        name: "setup dotnet"
+        with:
+          dotnet-version: "6.0.x"
+      - run: "pwsh ./build.ps1 --target Test --configuration Release"
+        name: "running test suite"

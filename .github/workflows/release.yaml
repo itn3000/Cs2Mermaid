@@ -1,0 +1,101 @@
+on:
+  release:
+    types:
+      - created
+jobs:
+  build:
+    strategy:
+      matrix:
+        os:
+          - windows-2022
+          - ubuntu-20.04
+          - macos-11
+          - macos-12-arm
+        include:
+          - os: windows-2022
+            osimage: windows-2022
+            exename: cs2mmd.exe
+            runtime: win-x64
+          - os: ubuntu-20.04
+            osimage: ubuntu-20.04
+            exename: cs2mmd
+            runtime: linux-x64
+          - os: macos-11
+            osimage: macos-11
+            exename: cs2mmd
+            runtime: osx-x64
+          - os: macos-12-arm
+            osimage: macos-11
+            exename: cs2mmd
+            runtime: osx.12-arm64
+    runs-on: ${{ matrix.osimage }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v2
+        name: "setup dotnet"
+        with:
+          dotnet-version: "6.0.x"
+      - name: "build nuget package"
+        run: "pwsh ./build.ps1 --target Pack --configuration Release"
+        if: ${{ matrix.os == 'windows-2022' }}
+      - name: "build tgz binary"
+        run: "pwsh ./build.ps1 --target ArchiveTgz --configuration Release --runtime ${{ matrix.runtime }}"
+        if: ${{ matrix.os != 'windows-2022'}}
+      - name: "build zip binary"
+        run: "pwsh ./build.ps1 --target ArchiveZip --configuration Release --runtime ${{ matrix.runtime }}"
+        if: ${{ matrix.os == 'windows-2022'}}
+      - name: "collect nupkg"
+        uses: actions/upload-artifact@v3
+        with:
+          name: nupkg
+          path: |
+            artifacts/Release/Any/cs2mmd.*.nupkg
+            artifacts/Release/Any/cs2mmd.*.snupkg
+        if: ${{ matrix.os == 'windows-2022' }}
+      - name: "collect tgz binary"
+        uses: actions/upload-artifact@v3
+        with:
+          name: "tgz-${{ matrix.runtime }}"
+          path: "artifacts/archive/Release/${{ matrix.runtime }}/*.tgz"
+        if: ${{ matrix.os != 'windows-2022' }}
+      - name: "collect zip binary"
+        uses: actions/upload-artifact@v3
+        with:
+          name: "zip-${{ matrix.runtime }}"
+          path: "artifacts/archive/Release/${{ matrix.runtime }}/*.zip"
+        if: ${{ matrix.os == 'windows-2022' }}
+  release:
+    needs: build
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/setup-dotnet@v2
+        name: "setup dotnet 6.0.x"
+        with:
+          dotnet-version: "6.0.x"
+      - uses: actions/download-artifact@v3
+        name: "downloading artifacts"
+        with:
+          path: artifacts
+      - name: get tag name
+        id: tag_name
+        run: "echo ::set-output name=GIT_TAG_NAME::$(echo ${{github.ref}}|sed -e \"s#refs/tag/##\")"
+      - name: upload nuget package to nuget.org
+        run: dotnet nuget push artifacts/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{ secrets.NUGET_TOKEN }}
+      - name: upload zip to github release
+        run: gh release upload ${{steps.tag_name.outputs.GIT_TAG_NAME}} artifacts/*.zip
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: upload tgz to github release
+        run: gh release upload ${{steps.tag_name.outputs.GIT_TAG_NAME}} artifacts/*.tgz
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: upload nupkg to github release
+        run: gh release upload ${{steps.tag_name.outputs.GIT_TAG_NAME}} artifacts/*.nupkg
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: upload snupkg to github release
+        run: gh release upload ${{steps.tag_name.outputs.GIT_TAG_NAME}} artifacts/*.snupkg
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}

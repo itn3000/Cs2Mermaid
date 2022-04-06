@@ -63,3 +63,12 @@ jobs:
           name: "zip-${{ matrix.runtime }}"
           path: "artifacts/archive/Release/${{ matrix.runtime }}/*.zip"
         if: ${{ matrix.os == 'windows-2022' }}
+  get_artifact_list:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/download-artifact@v3
+        name: "downloading artifacts"
+        with:
+          path: artifacts
+      - name: list files
+        run: ls -R artifacts
