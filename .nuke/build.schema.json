@@ -46,6 +46,10 @@
             "VSCode"
           ]
         },
+        "IsReleaseBuild": {
+          "type": "boolean",
+          "description": "release build flag"
+        },
         "NoLogo": {
           "type": "boolean",
           "description": "Disables displaying the NUKE logo"

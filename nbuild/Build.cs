@@ -68,6 +68,7 @@ class Build : NukeBuild
         {
             DotNetTasks.DotNetBuild(cfg => cfg.SetConfiguration(Configuration)
                 .SetProjectFile(Solution)
+                .SetVersionSuffix(VersionSuffix)
                 .SetRuntime(Runtime));
         });
     Target Test => _ => _
@@ -90,6 +91,7 @@ class Build : NukeBuild
                 .SetSelfContained(!string.IsNullOrEmpty(Runtime))
                 .SetPublishSingleFile(!string.IsNullOrEmpty(Runtime))
                 .SetPublishTrimmed(!string.IsNullOrEmpty(Runtime))
+                .SetVersionSuffix(VersionSuffix)
                 .SetProperty("LinkMode", "copyused")
                 );
         });

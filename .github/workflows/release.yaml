@@ -49,8 +49,8 @@ jobs:
         with:
           name: nupkg
           path: |
-            artifacts/Release/Any/cs2mmd.*.nupkg
-            artifacts/Release/Any/cs2mmd.*.snupkg
+            artifacts/Release/Any/*.nupkg
+            artifacts/Release/Any/*.snupkg
         if: ${{ matrix.os == 'windows-2022' }}
       - name: "collect tgz binary"
         uses: actions/upload-artifact@v3

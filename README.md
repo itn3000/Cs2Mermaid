@@ -38,7 +38,7 @@ This tool converts from C# syntax tree to mermaid diagram
 `--symbol` option can be specified multiple.
 `cs2mmd -i path/to/cs --pp-symbol ABC --pp-symbol DEF`
 
-## Read from file and output to file by markdown with original source
+## output as markdown with original source(github format)
 
 `cs2mmd -i path/to/cs -o output.md --md-with-source --chart-orientation TD`
 

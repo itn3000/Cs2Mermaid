@@ -10,8 +10,7 @@ public class ConvertOptions
     public string[]? PreprocessorSymbols { get; set; }
     public string? LangVersion { get; set; }
     public string? ChartOrientation { get; set; }
-    public string? SourceKind { get; set; }
-    public bool ParseDocumentComment { get; set; }
+    public bool? AsScript { get; set; }
 }
 public static class ConvertCsToMermaid
 {
@@ -34,24 +33,20 @@ public static class ConvertCsToMermaid
                 throw new Exception($"failed to parse langveresion: {options.LangVersion}", e);
             }
         }
-        if(!string.IsNullOrEmpty(options.SourceKind))
+        if(options.AsScript.HasValue)
         {
-            try
+            if(options.AsScript.Value)
             {
-                ret = ret.WithKind(Enum.Parse<SourceCodeKind>(options.SourceKind, true));
+                ret = ret.WithKind(SourceCodeKind.Script);
             }
-            catch(Exception e)
+            else
             {
-                throw new Exception($"failed to parse sourcecode kind: {options.SourceKind}", e);
+                ret = ret.WithKind(SourceCodeKind.Regular);
             }
         }
         if (options.PreprocessorSymbols != null && options.PreprocessorSymbols.Length != 0)
         {
             ret = ret.WithPreprocessorSymbols(options.PreprocessorSymbols);
-        }
-        if(options.ParseDocumentComment)
-        {
-            ret = ret.WithDocumentationMode(DocumentationMode.Parse);
         }
         return ret;
     }

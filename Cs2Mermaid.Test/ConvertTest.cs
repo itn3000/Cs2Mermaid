@@ -44,4 +44,46 @@ public class ConvertTest
         _OutputHelper.WriteLine(generated);
         Assert.NotNull(generated);
     }
+    // [Fact]
+    // public void DocComment()
+    // {
+    //     var options = new ConvertOptions()
+    //     {
+    //         ParseDocumentComment = true,
+    //     };
+    //     var code = @"
+    //     /// <summary>this is summary</summary>
+    //     /// <remarks>this is remarks</remarks>
+    //     class C1
+    //     {
+    //         public void M(int x){}
+    //     }
+    //     ";
+    //     var withdoc = ConvertCsToMermaid.Convert(code, options);
+    //     _OutputHelper.WriteLine("withdoc: " + withdoc);
+    //     Assert.NotNull(withdoc);
+    //     options.ParseDocumentComment = false;
+    //     var nodoc = ConvertCsToMermaid.Convert(code, options);
+    //     _OutputHelper.WriteLine("nodoc: " + nodoc);
+    //     Assert.NotEqual(nodoc, withdoc);
+    // }
+    [Fact]
+    public void SourceCodeKindTest()
+    {
+        var options = new ConvertOptions()
+        {
+            AsScript = true
+        };
+        var code = @"
+        #r """"
+        var x = 1 + 1;
+        ";
+        var asscript = ConvertCsToMermaid.Convert(code, options);
+        options.AsScript = false;
+        var asregular = ConvertCsToMermaid.Convert(code, options);
+        _OutputHelper.WriteLine("script: " + asscript);
+        _OutputHelper.WriteLine("regular: " + asregular);
+        Assert.NotEqual(asregular, asscript);
+
+    }
 }

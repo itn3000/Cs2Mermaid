@@ -35,21 +35,21 @@ jobs:
       - run: "pwsh ./build.ps1 --target Test --configuration Release"
         name: "running test suite"
       - name: "build nuget package"
-        run: "pwsh ./build.ps1 --target Pack --configuration Release"
+        run: "pwsh ./build.ps1 --target Pack --configuration Release --version-suffix alpha.${{ github.run_number }}"
         if: ${{ matrix.os == 'windows-2022' }}
       - name: "build tgz binary"
-        run: "pwsh ./build.ps1 --target ArchiveTgz --configuration Release --runtime ${{ matrix.runtime }}"
+        run: "pwsh ./build.ps1 --target ArchiveTgz --configuration Release --runtime ${{ matrix.runtime }} --version-suffix alpha.${{ github.run_number }}"
         if: ${{ matrix.os != 'windows-2022'}}
       - name: "build zip binary"
-        run: "pwsh ./build.ps1 --target ArchiveZip --configuration Release --runtime ${{ matrix.runtime }}"
+        run: "pwsh ./build.ps1 --target ArchiveZip --configuration Release --runtime ${{ matrix.runtime }} --version-suffix alpha.${{ github.run_number }}"
         if: ${{ matrix.os == 'windows-2022'}}
       - name: "collect nupkg"
         uses: actions/upload-artifact@v3
         with:
           name: nupkg
           path: |
-            artifacts/Release/Any/cs2mmd.*.nupkg
-            artifacts/Release/Any/cs2mmd.*.snupkg
+            artifacts/Release/Any/*.nupkg
+            artifacts/Release/Any/*.snupkg
         if: ${{ matrix.os == 'windows-2022' }}
       - name: "collect tgz binary"
         uses: actions/upload-artifact@v3

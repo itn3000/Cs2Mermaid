@@ -15,8 +15,7 @@ class MyCommandHandler : ICommandHandler
     Option<bool> showAvailableVersion = new Option<bool>("--available-version", "output available C# version and exit");
     Option<string[]> symbolOption = new Option<string[]>("--pp-symbol", "preprocessor symbol(can be multiple)");
     Option<string> orientationOption = new Option<string>(new string[] { "--chart-orientation", "-co" }, "flowchart orientation(default: LR)");
-    Option<string> sourceKindOption = new Option<string>("--source-kind", "source code kind: 'regular'(default) or 'script')");
-    Option<bool> parseDocCommentOption = new Option<bool>("--parse-doc-comment", "parse document comment too");
+    Option<bool> asScriptOption = new Option<bool>("--as-script", "parse as C# script");
     public Option[] GetOptions()
     {
         return new Option[]
@@ -30,8 +29,7 @@ class MyCommandHandler : ICommandHandler
             showAvailableVersion,
             symbolOption,
             orientationOption,
-            sourceKindOption,
-            parseDocCommentOption,
+            asScriptOption,
         };
     }
     public MyCommandHandler()
@@ -78,15 +76,13 @@ class MyCommandHandler : ICommandHandler
         var presymbols = context.ParseResult.GetValueForOption<string[]>(symbolOption);
         var langver = context.ParseResult.GetValueForOption<string>(langVersion);
         var orientation = context.ParseResult.GetValueForOption<string>(orientationOption);
-        var sourceKind = context.ParseResult.GetValueForOption<string>(sourceKindOption);
-        var parseDocComment = context.ParseResult.GetValueForOption<bool>(parseDocCommentOption);
+        var asscript = context.ParseResult.GetValueForOption<bool>(asScriptOption);
         return new ConvertOptions()
         {
             LangVersion = langver,
             PreprocessorSymbols = presymbols,
             ChartOrientation = orientation,
-            SourceKind = sourceKind,
-            ParseDocumentComment = parseDocComment,
+            AsScript = asscript,
         };
     }
     void ProcessWithMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions)
