@@ -56,7 +56,7 @@ Console.WriteLine("Hello World");
 ```
 
 ```mermaid
-flowchart TD
+flowchart LR
   CompilationUnit_0["CompilationUnit"]
   UsingDirective_0["UsingDirective"]
   CompilationUnit_0 --> UsingDirective_0
@@ -92,7 +92,7 @@ flowchart TD
           ArgumentList_0 --> Argument_0
             StringLiteralExpression_0["StringLiteralExpression"]
             Argument_0 --> StringLiteralExpression_0
-              StringLiteralExpression_0 --> StringLiteralToken_0["StringLiteralToken "Hello World""]
+              StringLiteralExpression_0 --> StringLiteralToken_0["StringLiteralToken \u0022Hello\u0020World\u0022"]
               StringLiteralExpression_0["StringLiteralExpression"]
             Argument_0["Argument"]
           ArgumentList_0 --> CloseParenToken_0["CloseParenToken )"]
