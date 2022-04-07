@@ -56,7 +56,7 @@ Console.WriteLine("Hello World");
 ```
 
 ```mermaid
-flowchart LR
+flowchart TD
   CompilationUnit_0["CompilationUnit"]
   UsingDirective_0["UsingDirective"]
   CompilationUnit_0 --> UsingDirective_0
