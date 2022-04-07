@@ -64,6 +64,9 @@ jobs:
           name: "zip-${{ matrix.runtime }}"
           path: "artifacts/archive/Release/${{ matrix.runtime }}/*.zip"
         if: ${{ matrix.os == 'windows-2022' }}
+      - name: push nuget package to github package registry
+        run: "pwsh ./build.ps1 --target Push --configuration Release --api-key ${{secrets.GITHUB_TOKEN}} --package-source https://nuget.pkg.github.com/itn3000/index.json"
+        if: ${{ matrix.os == 'windows-2022' }}
   release:
     needs: build
     runs-on: ubuntu-20.04

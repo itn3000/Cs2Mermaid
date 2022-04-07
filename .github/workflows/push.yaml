@@ -1,4 +1,8 @@
-on: push
+on: 
+  push:
+    paths-ignore:
+      - "README.md"
+      - "ChangeLog.md"
 jobs:
   default:
     strategy:
