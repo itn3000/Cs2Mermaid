@@ -52,7 +52,7 @@ jobs:
             artifacts/Release/Any/*.snupkg
         if: ${{ matrix.os == 'windows-2022' }}
       - name: push nuget package to github package registry
-        run: "pwsh ./build.ps1 --target Push --configuration Release --api-key ${{secrets.GITHUB_TOKEN}} --package-source github"
+        run: "pwsh ./build.ps1 --target Push --configuration Release --api-key ${{secrets.GITHUB_TOKEN}} --package-source https://nuget.pkg.github.com/itn3000/index.json"
         if: ${{ matrix.os == 'windows-2022' }}
       - name: "collect tgz binary"
         uses: actions/upload-artifact@v3
