@@ -162,9 +162,9 @@ class Build : NukeBuild
                 throw new Exception("targetFile not found");
             }
             Serilog.Log.Information("targetFile is {0}", targetFile);
-            NuGetPush(cfg => cfg.SetTargetPath(targetFile)
-                .SetApiKey(ApiKey)
-                .SetSource(PackageSource)
-                );
+            DotNetTasks.DotNetNuGetPush(cfg => cfg.SetApiKey(ApiKey)
+                .SetTargetPath(targetFile)
+                .SetSource(PackageSource))
+                ;
         });
 }
