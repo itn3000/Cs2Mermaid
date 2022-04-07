@@ -128,7 +128,19 @@ public static class ConvertCsToMermaid
             }
             else
             {
-                tw.WriteLine($"{indent}{currentNodeName} --> {childNodeName}[\"{child.Kind()} {child.ToString()}\"]");
+                var tokenString = child.ToString().Aggregate(new StringBuilder(), (sb, c) => 
+                {
+                    if(char.IsWhiteSpace(c) || c == '"' || char.IsControl(c))
+                    {
+                        sb.Append("\\u" + ((int)c).ToString("x04"));
+                    }
+                    else
+                    {
+                        sb.Append(c);
+                    }
+                    return sb;
+                }).ToString();
+                tw.WriteLine($"{indent}{currentNodeName} --> {childNodeName}[\"{child.Kind()} {tokenString}\"]");
             }
         }
         if (!hasChild)

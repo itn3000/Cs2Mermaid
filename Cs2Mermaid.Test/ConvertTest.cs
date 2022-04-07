@@ -99,5 +99,6 @@ public class ConvertTest
         options.LangVersion = "CSharp10";
         var cs10_0 = ConvertCsToMermaid.Convert(code, options);
         _OutputHelper.WriteLine("cs10 = " + cs10_0);
+        Assert.NotEqual(cs10_0, cs7_3);
     }
 }
