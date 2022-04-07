@@ -1,6 +1,7 @@
 # converter from C# syntax tree to mermaid diagram
 
 This tool converts from C# syntax tree to mermaid diagram
+nuget package(dotnet tool): https://www.nuget.org/packages/Cs2Mermaid/
 
 # Usage
 
@@ -35,7 +36,8 @@ This tool converts from C# syntax tree to mermaid diagram
 
 ## parse with Preprocessor
 
-`--symbol` option can be specified multiple.
+`--pp-symbol` option can be specified multiple.
+
 `cs2mmd -i path/to/cs --pp-symbol ABC --pp-symbol DEF`
 
 ## output as markdown with original source(github format)
