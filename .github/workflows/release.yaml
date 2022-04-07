@@ -80,7 +80,7 @@ jobs:
         with:
           path: artifacts
       - name: upload nuget package to nuget.org
-        run: dotnet nuget push artifacts/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
+        run: dotnet nuget push artifacts/nupkg/*.nupkg -k $NUGET_AUTH_TOKEN -s https://api.nuget.org/v3/index.json
         env:
           NUGET_AUTH_TOKEN: ${{ secrets.NUGET_AUTH_TOKEN }}
       - name: upload tgz to github release
