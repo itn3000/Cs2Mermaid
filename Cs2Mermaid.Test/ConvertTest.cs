@@ -86,4 +86,18 @@ public class ConvertTest
         Assert.NotEqual(asregular, asscript);
 
     }
+    [Fact]
+    public void LangVersionTest()
+    {
+        var options = new ConvertOptions()
+        {
+            LangVersion = "CSharp7_3"
+        };
+        var code = @"record Abc(string X);";
+        var cs7_3 = ConvertCsToMermaid.Convert(code, options);
+        _OutputHelper.WriteLine("cs7.3 = " + cs7_3);
+        options.LangVersion = "CSharp10";
+        var cs10_0 = ConvertCsToMermaid.Convert(code, options);
+        _OutputHelper.WriteLine("cs10 = " + cs10_0);
+    }
 }
