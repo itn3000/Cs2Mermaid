@@ -3,6 +3,8 @@ on:
     paths-ignore:
       - "README.md"
       - "ChangeLog.md"
+      - ".github/workflows/pull_request.yaml"
+      - ".github/workflows/release.yaml"
 jobs:
   default:
     strategy:
