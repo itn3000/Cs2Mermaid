@@ -1,6 +1,6 @@
 # converter from C# syntax tree to mermaid diagram
 
-This tool converts from C# syntax tree to mermaid diagram.
+This tool converts from C# syntax tree to [mermaid.js diagram.](https://mermaid-js.github.io/mermaid/#/)
 
 nuget package(dotnet tool): https://www.nuget.org/packages/Cs2Mermaid/
 
