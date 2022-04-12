@@ -11,6 +11,7 @@ public class ConvertOptions
     public string? LangVersion { get; set; }
     public string? ChartOrientation { get; set; }
     public bool? AsScript { get; set; }
+    public TextWriter? DiagnosticsWriter { get; set; }
 }
 public static class ConvertCsToMermaid
 {
@@ -50,30 +51,32 @@ public static class ConvertCsToMermaid
         }
         return ret;
     }
-    public static void Convert(Stream input, Encoding inputEncoding, TextWriter tw, ConvertOptions convertOptions)
+    public static IEnumerable<Diagnostic> Convert(Stream input, Encoding inputEncoding, TextWriter tw, ConvertOptions convertOptions)
     {
         var src = SourceText.From(input, inputEncoding);
         var opt = CreateParseOption(convertOptions);
-        var node = CSharpSyntaxTree.ParseText(src, opt);
-        var rootNode = node.GetRoot();
+        var syntaxTree = CSharpSyntaxTree.ParseText(src, opt);
+        var rootNode = syntaxTree.GetRoot();
         WriteHeader(tw, convertOptions.ChartOrientation);
         var kinds = new Dictionary<string, int>();
         var mermaidNodeName = GetMermaidNodeName(rootNode.Kind(), kinds);
         ConvertInternal(tw, mermaidNodeName, rootNode, 1, kinds);
+        return syntaxTree.GetDiagnostics().ToArray();
     }
 
-    public static void Convert(TextReader tr, TextWriter tw, ConvertOptions convertOptions)
+    public static IEnumerable<Diagnostic> Convert(TextReader tr, TextWriter tw, ConvertOptions convertOptions)
     {
         var src = SourceText.From(tr.ReadToEnd());
         var opt = CreateParseOption(convertOptions);
-        var node = CSharpSyntaxTree.ParseText(src, opt);
-        var rootNode = node.GetRoot();
+        var syntaxTree = CSharpSyntaxTree.ParseText(src, opt);
+        var rootNode = syntaxTree.GetRoot();
         WriteHeader(tw, convertOptions.ChartOrientation);
         var kinds = new Dictionary<string, int>();
         var mermaidNodeName = GetMermaidNodeName(rootNode.Kind(), kinds);
         ConvertInternal(tw, mermaidNodeName, rootNode, 1, kinds);
+        return syntaxTree.GetDiagnostics();
     }
-    public static string Convert(string code, ConvertOptions convertOptions)
+    public static string Convert(string code, ConvertOptions convertOptions, out IEnumerable<Diagnostic> diagnostics)
     {
         var opt = CreateParseOption(convertOptions);
         var node = CSharpSyntaxTree.ParseText(code, opt);
@@ -84,6 +87,7 @@ public static class ConvertCsToMermaid
         var kinds = new Dictionary<string, int>();
         var mermaidNodeName = GetMermaidNodeName(rootNode.Kind(), kinds);
         ConvertInternal(sw, mermaidNodeName, rootNode, 1, kinds);
+        diagnostics = node.GetDiagnostics();
         return sb.ToString();
     }
     static void WriteHeader(TextWriter tw, string? orientation)

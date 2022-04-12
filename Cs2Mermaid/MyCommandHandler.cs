@@ -16,6 +16,7 @@ class MyCommandHandler : ICommandHandler
     Option<string[]> symbolOption = new Option<string[]>("--pp-symbol", "preprocessor symbol(can be multiple)");
     Option<string> orientationOption = new Option<string>(new string[] { "--chart-orientation", "-co" }, "flowchart orientation(default: LR)");
     Option<bool> asScriptOption = new Option<bool>("--as-script", "parse as C# script");
+    Option<bool> outputDiagnosticsOption = new Option<bool>("--output-diagnostics", "output diagnostics to stderr");
     public Option[] GetOptions()
     {
         return new Option[]
@@ -53,14 +54,20 @@ class MyCommandHandler : ICommandHandler
             var outputEncoding = context.ParseResult.GetValueForOption<string>(outputEncodingOption);
             var input = context.ParseResult.GetValueForOption<string>(inputoption);
             var inputEncoding = context.ParseResult.GetValueForOption<string>(inputEncodingOption);
+            var outputDiagnostics = context.ParseResult.GetValueForOption<bool>(outputDiagnosticsOption);
             var withMd = context.ParseResult.GetValueForOption<bool>(withMdOption);
+            var diagnosticsWriter = outputDiagnostics switch
+            {
+                true => context.Console.Error,
+                false => null
+            };
             if (withMd)
             {
-                ProcessWithMd(output, outputEncoding, input, inputEncoding, CreateConvertOptions(context));
+                ProcessWithMd(output, outputEncoding, input, inputEncoding, CreateConvertOptions(context), diagnosticsWriter);
             }
             else
             {
-                ProcessNoMd(output, outputEncoding, input, inputEncoding, CreateConvertOptions(context));
+                ProcessNoMd(output, outputEncoding, input, inputEncoding, CreateConvertOptions(context), diagnosticsWriter);
             }
             return Task.FromResult(0);
         }
@@ -85,7 +92,7 @@ class MyCommandHandler : ICommandHandler
             AsScript = asscript,
         };
     }
-    void ProcessWithMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions)
+    void ProcessWithMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions, TextWriter? diagnosticWriter)
     {
         var ie = GetEncoding(inputEncoding);
         string sourceText = "";
@@ -104,12 +111,19 @@ class MyCommandHandler : ICommandHandler
             tw.WriteLine("```");
             tw.WriteLine();
             tw.WriteLine("```mermaid");
-            ConvertCsToMermaid.Convert(tr, tw, convertOptions);
+            var diagnostics = ConvertCsToMermaid.Convert(tr, tw, convertOptions);
             tw.WriteLine("```");
             tw.Flush();
+            if(diagnosticWriter != null)
+            {
+                foreach(var diag in diagnostics)
+                {
+                    diagnosticWriter.WriteLine(diag);
+                }
+            }
         }
     }
-    void ProcessNoMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions)
+    void ProcessNoMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions, TextWriter? diagnosticWriter)
     {
         using var inputstm = CreateInputStream(input);
         using var outputstm = CreateOutputStream(output);
@@ -117,8 +131,16 @@ class MyCommandHandler : ICommandHandler
         var oe = GetEncoding(outputEncoding);
         using var tr = new StreamReader(inputstm, ie);
         using var tw = new StreamWriter(outputstm, oe);
-        Cs2Mermaid.ConvertCsToMermaid.Convert(inputstm, ie, tw, convertOptions);
+        var diags = Cs2Mermaid.ConvertCsToMermaid.Convert(inputstm, ie, tw, convertOptions);
         tw.Flush();
+        if(diagnosticWriter != null)
+        {
+            foreach(var diag in diags)
+            {
+                diagnosticWriter.WriteLine(diag);
+            }
+        }
+
     }
     Stream CreateInputStream(string? input)
     {
