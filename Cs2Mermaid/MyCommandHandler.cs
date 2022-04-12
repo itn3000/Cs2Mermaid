@@ -16,6 +16,7 @@ class MyCommandHandler : ICommandHandler
     Option<string[]> symbolOption = new Option<string[]>("--pp-symbol", "preprocessor symbol(can be multiple)");
     Option<string> orientationOption = new Option<string>(new string[] { "--chart-orientation", "-co" }, "flowchart orientation(default: LR)");
     Option<bool> asScriptOption = new Option<bool>("--as-script", "parse as C# script");
+    Option<string[]> featuresOption = new Option<string[]>("--feature", "add features(key-value must be separated with '=', if separator does not exist, value will be 'true')");
     public Option[] GetOptions()
     {
         return new Option[]
@@ -30,6 +31,7 @@ class MyCommandHandler : ICommandHandler
             symbolOption,
             orientationOption,
             asScriptOption,
+            featuresOption,
         };
     }
     public MyCommandHandler()
@@ -77,13 +79,25 @@ class MyCommandHandler : ICommandHandler
         var langver = context.ParseResult.GetValueForOption<string>(langVersion);
         var orientation = context.ParseResult.GetValueForOption<string>(orientationOption);
         var asscript = context.ParseResult.GetValueForOption<bool>(asScriptOption);
+        var features = GetFeatures(context.ParseResult.GetValueForOption<string[]>(featuresOption));
         return new ConvertOptions()
         {
             LangVersion = langver,
             PreprocessorSymbols = presymbols,
             ChartOrientation = orientation,
             AsScript = asscript,
+            Features = features,
         };
+    }
+    Dictionary<string, string>? GetFeatures(string[]? features)
+    {
+        if(features == null)
+        {
+            return null;
+        }
+        return features.Select(x => x.Split('=', 2))
+            .Where(x => x.Length > 0)
+            .ToDictionary(x => x[0], x => x.Length >= 2 ? x[1] : "true");
     }
     void ProcessWithMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions)
     {

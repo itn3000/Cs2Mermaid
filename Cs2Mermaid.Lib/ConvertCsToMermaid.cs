@@ -11,6 +11,7 @@ public class ConvertOptions
     public string? LangVersion { get; set; }
     public string? ChartOrientation { get; set; }
     public bool? AsScript { get; set; }
+    public IEnumerable<KeyValuePair<string, string>>? Features { get; set; }
 }
 public static class ConvertCsToMermaid
 {
@@ -33,9 +34,9 @@ public static class ConvertCsToMermaid
                 throw new Exception($"failed to parse langveresion: {options.LangVersion}", e);
             }
         }
-        if(options.AsScript.HasValue)
+        if (options.AsScript.HasValue)
         {
-            if(options.AsScript.Value)
+            if (options.AsScript.Value)
             {
                 ret = ret.WithKind(SourceCodeKind.Script);
             }
@@ -47,6 +48,10 @@ public static class ConvertCsToMermaid
         if (options.PreprocessorSymbols != null && options.PreprocessorSymbols.Length != 0)
         {
             ret = ret.WithPreprocessorSymbols(options.PreprocessorSymbols);
+        }
+        if (options.Features != null)
+        {
+            ret = ret.WithFeatures(options.Features);
         }
         return ret;
     }
@@ -128,9 +133,9 @@ public static class ConvertCsToMermaid
             }
             else
             {
-                var tokenString = child.ToString().Aggregate(new StringBuilder(), (sb, c) => 
+                var tokenString = child.ToString().Aggregate(new StringBuilder(), (sb, c) =>
                 {
-                    if(char.IsWhiteSpace(c) || c == '"' || char.IsControl(c))
+                    if (char.IsWhiteSpace(c) || c == '"' || char.IsControl(c))
                     {
                         sb.Append("\\u" + ((int)c).ToString("x04"));
                     }

@@ -3,6 +3,7 @@ using Xunit.Abstractions;
 using System.Text;
 using System.IO;
 using System;
+using System.Collections.Generic;
 
 namespace Cs2Mermaid.Test;
 
@@ -100,5 +101,20 @@ public class ConvertTest
         var cs10_0 = ConvertCsToMermaid.Convert(code, options);
         _OutputHelper.WriteLine("cs10 = " + cs10_0);
         Assert.NotEqual(cs10_0, cs7_3);
+    }
+    [Fact]
+    public void FeaturesTest()
+    {
+        var options = new ConvertOptions()
+        {
+            Features = new Dictionary<string, string>()
+            {
+                ["F1"] = "hoge",
+                ["strict"] = "true",
+            }
+        };
+        var result = ConvertCsToMermaid.Convert("1 + 1", options);
+        Assert.NotNull(result);
+        _OutputHelper.WriteLine("result = " + result);
     }
 }
