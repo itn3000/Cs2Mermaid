@@ -74,7 +74,11 @@ public static class ConvertCsToMermaid
         var kinds = new Dictionary<string, int>();
         var mermaidNodeName = GetMermaidNodeName(rootNode.Kind(), kinds);
         ConvertInternal(tw, mermaidNodeName, rootNode, 1, kinds);
-        return syntaxTree.GetDiagnostics();
+        return syntaxTree.GetDiagnostics().ToArray();
+    }
+    public static string Convert(string code, ConvertOptions convertOptions)
+    {
+        return Convert(code, convertOptions, out var diagnostics);
     }
     public static string Convert(string code, ConvertOptions convertOptions, out IEnumerable<Diagnostic> diagnostics)
     {
@@ -87,7 +91,7 @@ public static class ConvertCsToMermaid
         var kinds = new Dictionary<string, int>();
         var mermaidNodeName = GetMermaidNodeName(rootNode.Kind(), kinds);
         ConvertInternal(sw, mermaidNodeName, rootNode, 1, kinds);
-        diagnostics = node.GetDiagnostics();
+        diagnostics = node.GetDiagnostics().ToArray();
         return sb.ToString();
     }
     static void WriteHeader(TextWriter tw, string? orientation)

@@ -1,5 +1,6 @@
 using System.CommandLine.Invocation;
 using System.CommandLine;
+using System.CommandLine.IO;
 using System.Text;
 
 namespace Cs2Mermaid;
@@ -31,6 +32,7 @@ class MyCommandHandler : ICommandHandler
             symbolOption,
             orientationOption,
             asScriptOption,
+            outputDiagnosticsOption,
         };
     }
     public MyCommandHandler()
@@ -92,7 +94,7 @@ class MyCommandHandler : ICommandHandler
             AsScript = asscript,
         };
     }
-    void ProcessWithMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions, TextWriter? diagnosticWriter)
+    void ProcessWithMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions, IStandardStreamWriter? diagnosticWriter)
     {
         var ie = GetEncoding(inputEncoding);
         string sourceText = "";
@@ -118,12 +120,12 @@ class MyCommandHandler : ICommandHandler
             {
                 foreach(var diag in diagnostics)
                 {
-                    diagnosticWriter.WriteLine(diag);
+                    diagnosticWriter.WriteLine(diag.ToString());
                 }
             }
         }
     }
-    void ProcessNoMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions, TextWriter? diagnosticWriter)
+    void ProcessNoMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions, IStandardStreamWriter? diagnosticWriter)
     {
         using var inputstm = CreateInputStream(input);
         using var outputstm = CreateOutputStream(output);
@@ -137,7 +139,7 @@ class MyCommandHandler : ICommandHandler
         {
             foreach(var diag in diags)
             {
-                diagnosticWriter.WriteLine(diag);
+                diagnosticWriter.WriteLine(diag.ToString());
             }
         }
 
