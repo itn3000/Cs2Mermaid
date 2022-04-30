@@ -18,7 +18,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>cs2mmd</AssemblyName>
     <PackAsTool>true</PackAsTool>
-    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionPrefix>1.1.0</VersionPrefix>
     <PackageName>Cs2Mermaid</PackageName>
     <PackageDescription>convert CSharp syntax tree to mermaid diagram</PackageDescription>
     <PackageTags>roslyn;csharp;mermaid</PackageTags>
