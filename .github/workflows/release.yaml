@@ -27,7 +27,7 @@ jobs:
           - os: macos-12-arm
             osimage: macos-11
             exename: cs2mmd
-            runtime: osx.12-arm64
+            runtime: osx-arm64
     runs-on: ${{ matrix.osimage }}
     steps:
       - uses: actions/checkout@v3
@@ -76,9 +76,13 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/setup-dotnet@v2
-        name: "setup dotnet 6.0.x"
+        name: "setup dotnet 7.0.x"
         with:
-          dotnet-version: "6.0.x"
+          dotnet-version: "7.0.x"
+      - uses: actions/setup-dotnet@v2
+        name: "setup dotnet 8.0.x"
+        with:
+          dotnet-version: "8.0.x"
       - uses: actions/download-artifact@v3
         name: "downloading artifacts"
         with:
@@ -88,7 +92,7 @@ jobs:
         env:
           NUGET_AUTH_TOKEN: ${{ secrets.NUGET_AUTH_TOKEN }}
       - name: upload tgz to github release
-        run: gh release upload ${{github.event.release.tag_name}} artifacts/tgz-linux-x64/*.* artifacts/tgz-osx-x64/*.* artifacts/tgz-osx.12-arm64/*.* --clobber
+        run: gh release upload ${{github.event.release.tag_name}} artifacts/tgz-linux-x64/*.* artifacts/tgz-osx-x64/*.* artifacts/tgz-osx-arm64/*.* --clobber
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: upload zip and nupkg to github release
