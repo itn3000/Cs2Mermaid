@@ -30,7 +30,7 @@ jobs:
           - os: macos-12-arm
             osimage: macos-11
             exename: cs2mmd
-            runtime: osx.12-arm64
+            runtime: osx-arm64
     runs-on: ${{ matrix.osimage }}
     steps:
       - uses: actions/checkout@v3
