@@ -17,7 +17,6 @@ using ICSharpCode.SharpZipLib.Tar;
 using static Nuke.Common.Tools.NuGet.NuGetTasks;
 using Nuke.Common.Tools.NuGet;
 
-[CheckBuildProjectConfigurations]
 class Build : NukeBuild
 {
     /// Support plugins are available for:
@@ -116,9 +115,9 @@ class Build : NukeBuild
             var archivedir = ArtifactDir / "archive" / Configuration / Runtime;
             var destdir = archivedir / "cs2mmd";
             var outFile = archivedir / $"cs2mmd-{Runtime}.zip";
-            EnsureCleanDirectory(destdir);
+            destdir.CreateOrCleanDirectory();
             CopyDirectoryRecursively(runtimedir, destdir, DirectoryExistsPolicy.Merge);
-            CompressZip(destdir, outFile, fileMode: System.IO.FileMode.Create);
+            destdir.ZipTo(outFile, fileMode: System.IO.FileMode.Create);
         });
     Target ArchiveTgz => _ => _
         .Requires(() => !string.IsNullOrEmpty(Runtime))
@@ -129,7 +128,7 @@ class Build : NukeBuild
             var archivedir = ArtifactDir / "archive" / Configuration / Runtime;
             var destdir = archivedir / "cs2mmd";
             var outFile = archivedir / $"cs2mmd-{Runtime}.tgz";
-            EnsureCleanDirectory(destdir);
+            destdir.CreateOrCleanDirectory();
             CopyDirectoryRecursively(runtimedir, destdir, DirectoryExistsPolicy.Merge);
             using var fstm = System.IO.File.Create(outFile);
             using (var zstm = new GZipStream(fstm, CompressionMode.Compress))
@@ -156,7 +155,7 @@ class Build : NukeBuild
         .DependsOn(Pack)
         .Executes(() =>
         {
-            var targetFile = GlobFiles(ArtifactDir / Configuration / "Any", "*.nupkg").FirstOrDefault();
+            var targetFile = (ArtifactDir / Configuration / "Any").GlobFiles("*.nupkg").FirstOrDefault();
             if(targetFile == null)
             {
                 throw new Exception("targetFile not found");

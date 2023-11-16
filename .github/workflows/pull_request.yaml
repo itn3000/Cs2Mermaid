@@ -27,8 +27,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-dotnet@v2
-        name: "setup dotnet"
+        name: "setup dotnet 7.0"
         with:
-          dotnet-version: "6.0.x"
+          dotnet-version: "7.0.x"
+      - uses: actions/setup-dotnet@v2
+        name: "setup dotnet 8.0"
+        with:
+          dotnet-version: "8.0.x"
       - run: "pwsh ./build.ps1 --target Test --configuration Release"
         name: "running test suite"
