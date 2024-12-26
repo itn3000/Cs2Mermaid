@@ -12,8 +12,7 @@ jobs:
         os:
           - windows-2022
           - ubuntu-22.04
-          - macos-11
-          - macos-12-arm
+          - macos-13
         include:
           - os: windows-2022
             osimage: windows-2022
@@ -23,12 +22,8 @@ jobs:
             osimage: ubuntu-22.04
             exename: cs2mmd
             runtime: linux-x64
-          - os: macos-11
-            osimage: macos-11
-            exename: cs2mmd
-            runtime: osx-x64
-          - os: macos-12-arm
-            osimage: macos-11
+          - os: macos-13
+            osimage: macos-13
             exename: cs2mmd
             runtime: osx-arm64
     runs-on: ${{ matrix.osimage }}
