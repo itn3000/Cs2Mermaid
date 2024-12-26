@@ -8,7 +8,7 @@ jobs:
       matrix:
         os:
           - windows-2022
-          - ubuntu-20.04
+          - ubuntu-22.04
           - macos-11
           - macos-12-arm
         include:
@@ -16,8 +16,8 @@ jobs:
             osimage: windows-2022
             exename: cs2mmd.exe
             runtime: win-x64
-          - os: ubuntu-20.04
-            osimage: ubuntu-20.04
+          - os: ubuntu-22.04
+            osimage: ubuntu-22.04
             exename: cs2mmd
             runtime: linux-x64
           - os: macos-11
@@ -32,9 +32,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-dotnet@v2
-        name: "setup dotnet 7.0"
+        name: "setup dotnet 9.0"
         with:
-          dotnet-version: "7.0.x"
+          dotnet-version: "9.0.x"
       - uses: actions/setup-dotnet@v2
         name: "setup dotnet 8.0"
         with:
@@ -73,12 +73,12 @@ jobs:
         if: ${{ matrix.os == 'windows-2022' }}
   release:
     needs: build
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/setup-dotnet@v2
-        name: "setup dotnet 7.0.x"
+        name: "setup dotnet 9.0.x"
         with:
-          dotnet-version: "7.0.x"
+          dotnet-version: "9.0.x"
       - uses: actions/setup-dotnet@v2
         name: "setup dotnet 8.0.x"
         with:

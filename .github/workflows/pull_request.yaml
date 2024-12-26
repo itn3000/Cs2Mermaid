@@ -8,15 +8,15 @@ jobs:
       matrix:
         os:
           - windows-2022
-          - ubuntu-20.04
+          - ubuntu-22.04
           - macos-11
         include:
           - os: windows-2022
             osimage: windows-2022
             exename: cs2mmd.exe
             runtime: win-x64
-          - os: ubuntu-20.04
-            osimage: ubuntu-20.04
+          - os: ubuntu-22.04
+            osimage: ubuntu-22.04
             exename: cs2mmd
             runtime: linux-x64
           - os: macos-11
@@ -27,9 +27,9 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-dotnet@v2
-        name: "setup dotnet 7.0"
+        name: "setup dotnet 9.0"
         with:
-          dotnet-version: "7.0.x"
+          dotnet-version: "9.0.x"
       - uses: actions/setup-dotnet@v2
         name: "setup dotnet 8.0"
         with:
