@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="Cs2Mermaid.Lib/Cs2Mermaid.Lib.csproj" />
+  <Project Path="Cs2Mermaid.Test/Cs2Mermaid.Test.csproj" />
+  <Project Path="Cs2Mermaid/Cs2Mermaid.csproj" />
+  <Project Path="nbuild/nbuild.csproj">
+    <Build Project="false" />
+  </Project>
+</Solution>

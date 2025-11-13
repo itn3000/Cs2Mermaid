@@ -1,11 +1,10 @@
 using System.CommandLine.Invocation;
 using System.CommandLine;
-using System.CommandLine.IO;
 using System.Text;
 
 namespace Cs2Mermaid;
 
-class MyCommandHandler : ICommandHandler
+class MyCommandHandler : AsynchronousCommandLineAction
 {
     Option<string> outputoption = new Option<string>(new string[] { "--output", "-o" }, "output file(default stdout)");
     Option<string> inputoption = new Option<string>(new string[] { "-i", "--input" }, "input file(default stdin)");
@@ -39,53 +38,53 @@ class MyCommandHandler : ICommandHandler
     {
 
     }
-    public Task<int> InvokeAsync(InvocationContext context)
+    public override Task<int> InvokeAsync(ParseResult parseResult, CancellationToken ct)
     {
-        var showAvailable = context.ParseResult.GetValueForOption<bool>(showAvailableVersion);
+        var showAvailable = parseResult.GetValue<bool>(showAvailableVersion);
         if (showAvailable)
         {
             foreach (var ver in Cs2Mermaid.ConvertCsToMermaid.AvailableVersions())
             {
-                context.Console.WriteLine(ver);
+                Console.WriteLine(ver);
             }
             return Task.FromResult(0);
         }
         try
         {
-            var output = context.ParseResult.GetValueForOption<string>(outputoption);
-            var outputEncoding = context.ParseResult.GetValueForOption<string>(outputEncodingOption);
-            var input = context.ParseResult.GetValueForOption<string>(inputoption);
-            var inputEncoding = context.ParseResult.GetValueForOption<string>(inputEncodingOption);
-            var outputDiagnostics = context.ParseResult.GetValueForOption<bool>(outputDiagnosticsOption);
-            var withMd = context.ParseResult.GetValueForOption<bool>(withMdOption);
+            var output = parseResult.GetValue<string>(outputoption);
+            var outputEncoding = parseResult.GetValue<string>(outputEncodingOption);
+            var input = parseResult.GetValue<string>(inputoption);
+            var inputEncoding = parseResult.GetValue<string>(inputEncodingOption);
+            var outputDiagnostics = parseResult.GetValue<bool>(outputDiagnosticsOption);
+            var withMd = parseResult.GetValue<bool>(withMdOption);
             var diagnosticsWriter = outputDiagnostics switch
             {
-                true => context.Console.Error,
+                true => Console.Error,
                 false => null
             };
             if (withMd)
             {
-                ProcessWithMd(output, outputEncoding, input, inputEncoding, CreateConvertOptions(context), diagnosticsWriter);
+                ProcessWithMd(output, outputEncoding, input, inputEncoding, CreateConvertOptions(parseResult), diagnosticsWriter);
             }
             else
             {
-                ProcessNoMd(output, outputEncoding, input, inputEncoding, CreateConvertOptions(context), diagnosticsWriter);
+                ProcessNoMd(output, outputEncoding, input, inputEncoding, CreateConvertOptions(parseResult), diagnosticsWriter);
             }
             return Task.FromResult(0);
         }
         catch (Exception e)
         {
-            context.Console.Error.Write(e.ToString());
-            context.Console.Error.Write(Environment.NewLine);
+            Console.Error.Write(e.ToString());
+            Console.Error.Write(Environment.NewLine);
             return Task.FromResult(1);
         }
     }
-    ConvertOptions CreateConvertOptions(InvocationContext context)
+    ConvertOptions CreateConvertOptions(ParseResult parseResult)
     {
-        var presymbols = context.ParseResult.GetValueForOption<string[]>(symbolOption);
-        var langver = context.ParseResult.GetValueForOption<string>(langVersion);
-        var orientation = context.ParseResult.GetValueForOption<string>(orientationOption);
-        var asscript = context.ParseResult.GetValueForOption<bool>(asScriptOption);
+        var presymbols = parseResult.GetValue<string[]>(symbolOption);
+        var langver = parseResult.GetValue<string>(langVersion);
+        var orientation = parseResult.GetValue<string>(orientationOption);
+        var asscript = parseResult.GetValue<bool>(asScriptOption);
         return new ConvertOptions()
         {
             LangVersion = langver,
@@ -94,7 +93,7 @@ class MyCommandHandler : ICommandHandler
             AsScript = asscript,
         };
     }
-    void ProcessWithMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions, IStandardStreamWriter? diagnosticWriter)
+    void ProcessWithMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions, TextWriter? diagnosticWriter)
     {
         var ie = GetEncoding(inputEncoding);
         string sourceText = "";
@@ -125,7 +124,7 @@ class MyCommandHandler : ICommandHandler
             }
         }
     }
-    void ProcessNoMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions, IStandardStreamWriter? diagnosticWriter)
+    void ProcessNoMd(string? output, string? outputEncoding, string? input, string? inputEncoding, ConvertOptions convertOptions, TextWriter? diagnosticWriter)
     {
         using var inputstm = CreateInputStream(input);
         using var outputstm = CreateOutputStream(output);
