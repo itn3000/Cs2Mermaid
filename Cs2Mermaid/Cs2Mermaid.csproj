@@ -5,8 +5,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ConsoleAppFramework" Version="5.7.13">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.CommandLine" Version="2.0.0" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.0" />
     <None Include="../LICENSE.txt" Pack="true" PackagePath="" />
     <None Include="../README.md" Pack="true" PackagePath="" />
   </ItemGroup>

@@ -94,6 +94,33 @@ public static class ConvertCsToMermaid
         diagnostics = node.GetDiagnostics().ToArray();
         return sb.ToString();
     }
+    public static async Task<IEnumerable<Diagnostic>> ConvertAsync(TextReader tr, TextWriter tw, ConvertOptions convertOptions, CancellationToken cancellationToken)
+    {
+        var code = await tr.ReadToEndAsync(cancellationToken);
+        var opt = CreateParseOption(convertOptions);
+        var node = CSharpSyntaxTree.ParseText(code, opt, cancellationToken: cancellationToken);
+        var rootNode = node.GetRoot();
+        WriteHeader(tw, convertOptions.ChartOrientation);
+        var kinds = new Dictionary<string, int>();
+        var mermaidNodeName = GetMermaidNodeName(rootNode.Kind(), kinds);
+        await ConvertInternalAsync(tw, mermaidNodeName, rootNode, 1, kinds, cancellationToken);
+        return node.GetDiagnostics().ToArray();
+    }
+
+    public static async Task<(string, IEnumerable<Diagnostic>)> ConvertAsync(string code, ConvertOptions convertOptions, CancellationToken token)
+    {
+        var opt = CreateParseOption(convertOptions);
+        var node = CSharpSyntaxTree.ParseText(code, opt, cancellationToken: token);
+        var rootNode = node.GetRoot();
+        var sb = new StringBuilder();
+        var sw = new StringWriter(sb);
+        WriteHeader(sw, convertOptions.ChartOrientation);
+        var kinds = new Dictionary<string, int>();
+        var mermaidNodeName = GetMermaidNodeName(rootNode.Kind(), kinds);
+        await ConvertInternalAsync(sw, mermaidNodeName, rootNode, 1, kinds, token);
+        var diagnostics = node.GetDiagnostics().ToArray();
+        return (sb.ToString(), diagnostics);
+    }
     static void WriteHeader(TextWriter tw, string? orientation)
     {
         orientation = orientation ?? "LR";
@@ -111,6 +138,49 @@ public static class ConvertCsToMermaid
         {
             kinds[s] = 0;
             return $"{s}_0";
+        }
+    }
+    static async Task ConvertInternalAsync(TextWriter tw, string currentNodeName, SyntaxNode node, int depth, Dictionary<string, int> kinds, CancellationToken token)
+    {
+        await Task.Yield();
+        var indent = new string(' ', depth * 2);
+        bool hasChild = false;
+        foreach (var child in node.ChildNodesAndTokens())
+        {
+            token.ThrowIfCancellationRequested();
+            if (!hasChild && depth == 1)
+            {
+                tw.WriteLine($"{indent}{currentNodeName}[\"{node.Kind()}\"]");
+                hasChild = true;
+            }
+            var childNodeName = GetMermaidNodeName(child.Kind(), kinds);
+            var childnode = child.AsNode();
+            if (childnode != null)
+            {
+                tw.WriteLine($"{indent}{childNodeName}[\"{childnode.Kind()}\"]");
+                tw.WriteLine($"{indent}{currentNodeName} --> {childNodeName}");
+                await ConvertInternalAsync(tw, childNodeName, childnode, depth + 1, kinds, token);
+            }
+            else
+            {
+                var tokenString = child.ToString().Aggregate(new StringBuilder(), (sb, c) =>
+                {
+                    if (char.IsWhiteSpace(c) || c == '"' || char.IsControl(c))
+                    {
+                        sb.Append("\\u" + ((int)c).ToString("x04"));
+                    }
+                    else
+                    {
+                        sb.Append(c);
+                    }
+                    return sb;
+                }).ToString();
+                tw.WriteLine($"{indent}{currentNodeName} --> {childNodeName}[\"{child.Kind()} {tokenString}\"]");
+            }
+        }
+        if (!hasChild)
+        {
+            tw.WriteLine($"{indent}{currentNodeName}[\"{node.Kind()}\"]");
         }
     }
     static void ConvertInternal(TextWriter tw, string currentNodeName, SyntaxNode node, int depth, Dictionary<string, int> kinds)
