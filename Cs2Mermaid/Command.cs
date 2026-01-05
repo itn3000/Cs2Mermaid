@@ -8,6 +8,23 @@ namespace Cs2Mermaid
 {
     internal class Command
     {
+        /// <summary>
+        /// convert csharp source to mermaid diagram
+        /// </summary>
+        /// <param name="output">-o, output file(default stdout)</param>
+        /// <param name="input">-i, input file(default stdin)</param>
+        /// <param name="inputEncoding">-ie, input text encoding(default UTF8)</param>
+        /// <param name="outputEncoding">-oe, output text encoding(default UTF8 no BOM)</param>
+        /// <param name="mdWithSource">output markdown format with source</param>
+        /// <param name="langVersion">C# language version(default Latest)</param>
+        /// <param name="availableVersion">output available C# version and exit</param>
+        /// <param name="ppSymbol">preprocessor symbols</param>
+        /// <param name="chartOrientation">flowchart orientation(LR(left to right, default) or TB(top to bottom)</param>
+        /// <param name="asScript">parse as C# script</param>
+        /// <param name="outputDiagnostics">output diagnostics to stderr</param>
+        /// <param name="token"></param>
+        /// <returns>exit code</returns>
+        [Command("")]
         public async Task<int> DoConvert(string? output = null,
             string? input = null,
             string? inputEncoding = null,

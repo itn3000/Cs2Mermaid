@@ -5,16 +5,9 @@ using Nuke.Common.CI;
 using Nuke.Common.Execution;
 using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
-using Nuke.Common.Tooling;
-using Nuke.Common.Utilities.Collections;
-using static Nuke.Common.EnvironmentInfo;
-using static Nuke.Common.IO.FileSystemTasks;
-using static Nuke.Common.IO.PathConstruction;
 using Nuke.Common.Tools.DotNet;
 using System.IO.Compression;
-using static Nuke.Common.IO.CompressionTasks;
 using ICSharpCode.SharpZipLib.Tar;
-using static Nuke.Common.Tools.NuGet.NuGetTasks;
 using Nuke.Common.Tools.NuGet;
 
 class Build : NukeBuild
@@ -116,7 +109,7 @@ class Build : NukeBuild
             var destdir = archivedir / "cs2mmd";
             var outFile = archivedir / $"cs2mmd-{Runtime}.zip";
             destdir.CreateOrCleanDirectory();
-            CopyDirectoryRecursively(runtimedir, destdir, DirectoryExistsPolicy.Merge);
+            runtimedir.CopyToDirectory(destdir, ExistsPolicy.MergeAndOverwrite);
             destdir.ZipTo(outFile, fileMode: System.IO.FileMode.Create);
         });
     Target ArchiveTgz => _ => _
@@ -129,7 +122,7 @@ class Build : NukeBuild
             var destdir = archivedir / "cs2mmd";
             var outFile = archivedir / $"cs2mmd-{Runtime}.tgz";
             destdir.CreateOrCleanDirectory();
-            CopyDirectoryRecursively(runtimedir, destdir, DirectoryExistsPolicy.Merge);
+            runtimedir.CopyToDirectory(destdir, ExistsPolicy.MergeAndOverwrite);
             using var fstm = System.IO.File.Create(outFile);
             using (var zstm = new GZipStream(fstm, CompressionMode.Compress))
             using (var tstm = new TarOutputStream(zstm, System.Text.Encoding.UTF8))
