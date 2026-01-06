@@ -6,33 +6,26 @@ jobs:
   default:
     strategy:
       matrix:
-        os:
-          - windows-2022
-          - ubuntu-22.04
-          - macos-13
         include:
-          - os: windows-2022
+          - os: windows
             osimage: windows-2022
             exename: cs2mmd.exe
             runtime: win-x64
-          - os: ubuntu-22.04
+          - os: ubuntu
             osimage: ubuntu-22.04
             exename: cs2mmd
             runtime: linux-x64
-          - os: macos-13
-            osimage: macos-13
+          - os: macos
+            osimage: macos-14
             exename: cs2mmd
             runtime: osx-arm64
     runs-on: ${{ matrix.osimage }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-dotnet@v2
-        name: "setup dotnet 9.0"
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        name: "setup dotnet 10.0"
         with:
-          dotnet-version: "9.0.x"
-      - uses: actions/setup-dotnet@v2
-        name: "setup dotnet 8.0"
-        with:
-          dotnet-version: "8.0.x"
+          dotnet-version: "10.0.x"
+      - run: "pwsh -command Get-ChildItem -recurse"
       - run: "pwsh ./build.ps1 --target Test --configuration Release"
         name: "running test suite"
