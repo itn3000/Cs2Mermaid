@@ -28,7 +28,7 @@ jobs:
             runtime: osx-arm64
     runs-on: ${{ matrix.osimage }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - uses: actions/setup-dotnet@v5
         name: "setup dotnet 10.0"
         with:
