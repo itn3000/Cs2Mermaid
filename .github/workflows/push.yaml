@@ -9,21 +9,17 @@ jobs:
   default:
     strategy:
       matrix:
-        os:
-          - windows-2022
-          - ubuntu-22.04
-          - macos-13
         include:
-          - os: windows-2022
+          - os: windows
             osimage: windows-2022
             exename: cs2mmd.exe
             runtime: win-x64
-          - os: ubuntu-22.04
+          - os: ubuntu
             osimage: ubuntu-22.04
             exename: cs2mmd
             runtime: linux-x64
-          - os: macos-13
-            osimage: macos-13
+          - os: macos
+            osimage: macos-14
             exename: cs2mmd
             runtime: osx-arm64
     runs-on: ${{ matrix.osimage }}
@@ -37,13 +33,13 @@ jobs:
         name: "running test suite"
       - name: "build nuget package"
         run: "pwsh ./build.ps1 --target Pack --configuration Release --version-suffix alpha.${{ github.run_number }}"
-        if: ${{ matrix.os == 'windows-2022' }}
+        if: ${{ matrix.os == 'windows' }}
       - name: "build tgz binary"
         run: "pwsh ./build.ps1 --target ArchiveTgz --configuration Release --runtime ${{ matrix.runtime }} --version-suffix alpha.${{ github.run_number }}"
-        if: ${{ matrix.os != 'windows-2022'}}
+        if: ${{ matrix.os != 'windows'}}
       - name: "build zip binary"
         run: "pwsh ./build.ps1 --target ArchiveZip --configuration Release --runtime ${{ matrix.runtime }} --version-suffix alpha.${{ github.run_number }}"
-        if: ${{ matrix.os == 'windows-2022'}}
+        if: ${{ matrix.os == 'windows'}}
       - name: "collect nupkg"
         uses: actions/upload-artifact@v6
         with:
@@ -51,22 +47,22 @@ jobs:
           path: |
             artifacts/Release/Any/*.nupkg
             artifacts/Release/Any/*.snupkg
-        if: ${{ matrix.os == 'windows-2022' }}
+        if: ${{ matrix.os == 'windows' }}
       - name: push nuget package to github package registry
         run: "pwsh ./build.ps1 --target Push --configuration Release --api-key ${{secrets.GITHUB_TOKEN}} --package-source https://nuget.pkg.github.com/itn3000/index.json"
-        if: ${{ matrix.os == 'windows-2022' }}
+        if: ${{ matrix.os == 'windows' }}
       - name: "collect tgz binary"
         uses: actions/upload-artifact@v6
         with:
           name: "tgz-${{ matrix.runtime }}"
           path: "artifacts/archive/Release/${{ matrix.runtime }}/*.tgz"
-        if: ${{ matrix.os != 'windows-2022' }}
+        if: ${{ matrix.os != 'windows' }}
       - name: "collect zip binary"
         uses: actions/upload-artifact@v6
         with:
           name: "zip-${{ matrix.runtime }}"
           path: "artifacts/archive/Release/${{ matrix.runtime }}/*.zip"
-        if: ${{ matrix.os == 'windows-2022' }}
+        if: ${{ matrix.os == 'windows' }}
   get_artifact_list:
     runs-on: ubuntu-22.04
     needs: default
