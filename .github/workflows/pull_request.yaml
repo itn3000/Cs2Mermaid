@@ -26,6 +26,6 @@ jobs:
         name: "setup dotnet 10.0"
         with:
           dotnet-version: "10.0.x"
-      - run: "pwsh -command ls -recurse"
+      - run: "pwsh -command Get-ChildItem -recurse"
       - run: "pwsh ./build.ps1 --target Test --configuration Release"
         name: "running test suite"
