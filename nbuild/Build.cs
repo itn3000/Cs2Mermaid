@@ -106,11 +106,11 @@ class Build : NukeBuild
         {
             var runtimedir = ArtifactDir / Configuration / Runtime;
             var archivedir = ArtifactDir / "archive" / Configuration / Runtime;
-            var destdir = archivedir / "cs2mmd";
+            var destdir = archivedir / "zip" / "cs2mmd";
             var outFile = archivedir / $"cs2mmd-{Runtime}.zip";
             destdir.CreateOrCleanDirectory();
-            runtimedir.CopyToDirectory(destdir, ExistsPolicy.MergeAndOverwrite);
-            destdir.ZipTo(outFile, fileMode: System.IO.FileMode.Create);
+            runtimedir.Copy(destdir, ExistsPolicy.MergeAndOverwrite, excludeFile: p => p.Name.EndsWith("nupkg"));
+            destdir.Parent.ZipTo(outFile, fileMode: System.IO.FileMode.Create);
         });
     Target ArchiveTgz => _ => _
         .Requires(() => !string.IsNullOrEmpty(Runtime))
@@ -122,7 +122,7 @@ class Build : NukeBuild
             var destdir = archivedir / "cs2mmd";
             var outFile = archivedir / $"cs2mmd-{Runtime}.tgz";
             destdir.CreateOrCleanDirectory();
-            runtimedir.CopyToDirectory(destdir, ExistsPolicy.MergeAndOverwrite);
+            runtimedir.Copy(destdir, ExistsPolicy.MergeAndOverwrite);
             using var fstm = System.IO.File.Create(outFile);
             using (var zstm = new GZipStream(fstm, CompressionMode.Compress))
             using (var tstm = new TarOutputStream(zstm, System.Text.Encoding.UTF8))
